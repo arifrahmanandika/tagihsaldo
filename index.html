@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daftar Pengguna</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        padding: 20px;
+      }
+      .user-list {
+        list-style-type: none;
+        padding: 0;
+      }
+      .user-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid #ddd;
+        padding: 10px 0;
+      }
+      .wa-button {
+        background-color: #25d366;
+        color: white;
+        padding: 5px 10px;
+        text-decoration: none;
+        border-radius: 5px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Daftar Pengguna</h1>
+    <ul id="userList" class="user-list"></ul>
+
+    <script>
+      function formatRupiah(angka) {
+        return new Intl.NumberFormat("id-ID", {
+          style: "currency",
+          currency: "IDR",
+          minimumFractionDigits: 0,
+          maximumFractionDigits: 0,
+        }).format(angka);
+      }
+
+      fetch("https://catat-aja-default-rtdb.firebaseio.com/pengguna.json")
+        .then((response) => response.json())
+        .then((data) => {
+          const userList = document.getElementById("userList");
+          Object.values(data)
+            .filter(
+              (user) =>
+                user.idUsaha === "-NfV87d2__o3rUM_5rMC" && user.selisih > 0
+            )
+            .forEach((user) => {
+              const formattedSelisih = formatRupiah(user.selisih);
+              const listItem = document.createElement("li");
+              listItem.className = "user-item";
+              listItem.innerHTML = `
+                            <span>${user.namaPengguna} - ${formattedSelisih}</span>
+                            <button class="wa-button" onclick="kirimPesan('${user.nomorWa}', '${user.namaPengguna}', '${formattedSelisih}')">Kirim Pesan</button>
+                        `;
+              userList.appendChild(listItem);
+            });
+        })
+        .catch((error) => console.error("Error fetching data:", error));
+
+      function kirimPesan(nomorWa, namaPengguna, selisih) {
+        console.log(
+          "Mengirim pesan ke:",
+          nomorWa,
+          "Nama Pengguna:",
+          namaPengguna,
+          "Selisih:",
+          selisih
+        ); // Log data yang dikirim
+        fetch("http://localhost:3000/kirim-pesan", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nomorWa,
+            namaPengguna,
+            selisih,
+          }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status === "success") {
+              alert("Berhasil Kirim ke : " + namaPengguna);
+            } else {
+              alert("Terjadi kesalahan di server: " + data.error);
+            }
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            alert("Terjadi kesalahan saat mengirim pesan");
+          });
+      }
+    </script>
+  </body>
+</html>
