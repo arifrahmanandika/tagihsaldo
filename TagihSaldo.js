@@ -3,6 +3,7 @@ const bodyParser = require("body-parser");
 const { Client, LocalAuth } = require("whatsapp-web.js"); // Tambahkan LocalAuth di sini
 const qrcode = require("qrcode-terminal");
 const cors = require("cors");
+const puppeteer = require('puppeteer-core');
 
 // Membuat instance Express
 const app = express();
@@ -11,7 +12,10 @@ app.use(bodyParser.json());
 
 // Membuat client WhatsApp dengan LocalAuth untuk menyimpan sesi
 const client = new Client({
-  authStrategy: new LocalAuth(),
+    authStrategy: new LocalAuth(),
+    puppeteer: {
+        args: ['--no-sandbox', '--disable-setuid-sandbox']
+    }
 });
 
 // Menampilkan QR code di terminal untuk autentikasi pertama kali
