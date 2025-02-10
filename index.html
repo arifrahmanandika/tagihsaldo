@@ -57,15 +57,15 @@
               const listItem = document.createElement("li");
               listItem.className = "user-item";
               listItem.innerHTML = `
-                            <span>${user.namaPengguna} - ${formattedSelisih}</span>
-                            <button class="wa-button" onclick="kirimPesan('${user.nomorWa}', '${user.namaPengguna}', '${formattedSelisih}')">Kirim Pesan</button>
+                            <span>${user.namaPengguna} ### ${formattedSelisih}</span>
+                            <button class="wa-button" onclick="kirimPesan('${user.nomorWa}', '${user.namaPengguna}', '${user.idPengguna}', '${formattedSelisih}')">Kirim Pesan</button>
                         `;
               userList.appendChild(listItem);
             });
         })
         .catch((error) => console.error("Error fetching data:", error));
 
-      function kirimPesan(nomorWa, namaPengguna, selisih) {
+      function kirimPesan(nomorWa, namaPengguna, idPengguna, selisih) {
         console.log(
           "Mengirim pesan ke:",
           nomorWa,
@@ -74,7 +74,7 @@
           "Selisih:",
           selisih
         ); // Log data yang dikirim
-        fetch("http://localhost:3000/kirim-pesan", {
+        fetch("http://linux-india:3000/kirim-pesan", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -83,6 +83,7 @@
             nomorWa,
             namaPengguna,
             selisih,
+            idPengguna,
           }),
         })
           .then((response) => response.json())
